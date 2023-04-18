@@ -1,0 +1,32 @@
+version: "3.9"
+services:
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: database
+      MYSQL_ROOT_PASSWORD: 1234
+    volumes:
+      - ./base:/docker-entrypoint-initdb.d
+    ports:
+      - "3307:3306"
+
+  server:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      db_host: db
+      db_user: root
+      db_password: 1234
+      db_database: database
+      db_port: 3306
+
+  front:
+    build: ./my-app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server
